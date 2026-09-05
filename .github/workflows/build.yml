@@ -9,6 +9,9 @@ on:
   schedule:
     - cron: "0 8 * * 1"
 
+permissions:
+  contents: write
+
 jobs:
   Warp_Chrome:
     runs-on: ubuntu-latest
@@ -17,14 +20,29 @@ jobs:
       - uses: actions/setup-python@v4.7.1
         with:
           python-version: '3.10'
-      - run: ls
       - name: prepare env
         run: |
           python3 -m pip install -r requirements.txt
           python3 run.py
-      - name: upload
-        uses: actions/upload-artifact@v4
+      - name: Delete old asset
+        run: gh release delete-asset nightly Chrome_Portable.7z -y || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: ${{ env.BUILD_NAME }}
-          path: build/release/*
-          retention-days: 15
+          tag_name: nightly
+          name: Chrome Portable 便携版
+          prerelease: true
+          files: build/release/Chrome_Portable.7z
+          generate_release_notes: false
+          body: |
+            ## Google Chrome 便携版（自动构建）
+
+            解压后为 Chrome 文件夹，为 Chrome.exe 创建快捷方式即可使用。
+
+            - 数据目录：Chrome\Data
+            - 缓存目录：Chrome\Cache
+            - 配置文件：Chrome\chrome++.ini
+
+            > 每周一自动构建，始终覆盖为最新版。
