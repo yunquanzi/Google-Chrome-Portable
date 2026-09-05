@@ -55,7 +55,11 @@ shutil.move(r'version.dll', 'Chrome-bin')
 shutil.move(r'chrome++.ini', 'Chrome-bin')
 
 os.rename(r'Chrome-bin', 'Chrome')
+os.makedirs('build/release', exist_ok=True)
 shutil.move(r'Chrome', 'build/release/Chrome')
+
+# 打包为 7z 单文件，用于 Release 附件上传
+os.system('./7zzs a build/release/Chrome_Portable.7z build/release/Chrome')
 
 # 会自动封装为zip
 env = os.getenv('GITHUB_ENV')
