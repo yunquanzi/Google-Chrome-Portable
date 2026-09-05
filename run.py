@@ -58,12 +58,13 @@ os.rename(r'Chrome-bin', 'Chrome')
 os.makedirs('build/release', exist_ok=True)
 shutil.move(r'Chrome', 'build/release/Chrome')
 
-# 打包为 7z 单文件，用于 Release 附件上传
-os.system('./7zzs a build/release/Chrome_Portable.7z build/release/Chrome')
+# 打包为带版本号的 7z 文件，保留历史版本
+build_name = f'Win64_{version}_{datetime.now().strftime("%Y-%m-%d")}'
+os.system(f'./7zzs a build/release/{build_name}.7z build/release/Chrome')
 
 # 会自动封装为zip
 env = os.getenv('GITHUB_ENV')
 with open(env, 'a') as f:
-    f.write(f'BUILD_NAME=Win64_{version}_{datetime.now().strftime("%Y-%m-%d")}')
+    f.write(f'BUILD_NAME={build_name}')
 
 # os.system(f'7z.exe a build/release/Win64_{version}_{datetime.now().strftime("%Y-%m-%d")}.7z Chrome')
